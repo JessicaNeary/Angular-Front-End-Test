@@ -3,12 +3,17 @@ import {
   OnInit,
   OnDestroy,
   ViewChild,
-  AfterViewInit
+  AfterViewInit,
 } from "@angular/core";
-import { BehaviorSubject, Observable, of} from "rxjs";
+import { BehaviorSubject, Observable, of } from "rxjs";
 
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { catchError, debounceTime, distinctUntilChanged, switchMap } from "rxjs/operators";
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+} from "rxjs/operators";
 import { DialogComponent } from "./dialog/dialog.component";
 import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { MatPaginator } from "@angular/material/paginator";
@@ -51,7 +56,7 @@ export interface HttpRequest {
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
-  styleUrls: ["./app.component.scss"]
+  styleUrls: ["./app.component.css"],
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -72,15 +77,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private httpClient: HttpClient,
     public dialog: MatDialog,
     private fb: FormBuilder
-  ) {
-    
-  }
+  ) {}
   ngAfterViewInit(): void {
     this.paginator.page.subscribe(() => {
       this.characterDatabase
         .getCharacters("", "", this.paginator.pageIndex)
         .subscribe((response: HttpRequest) => {
-          this.characterDataSource = new MatTableDataSource(response.results as any[]);
+          this.characterDataSource = new MatTableDataSource(
+            response.results as any[]
+          );
           this.resultsLength = response.info?.count;
           // this.characterDataSource.paginator = this.paginator;
           this.characters$ = this.characterDataSource.connect();
@@ -104,12 +109,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       .search(this.searchTerm$)
       .subscribe((response: HttpRequest) => {
         if (!response.info || !response.results) {
-          this.resultsEmpty$.next(true)
-          return
+          this.resultsEmpty$.next(true);
+          return;
         }
-        this.resultsEmpty$.next(false)
+        this.resultsEmpty$.next(false);
         this.resultsLength = response.info?.count;
-        this.characterDataSource = new MatTableDataSource(response.results as any[]);
+        this.characterDataSource = new MatTableDataSource(
+          response.results as any[]
+        );
         this.characterDataSource.paginator = this.paginator;
         this.characters$ = this.characterDataSource.connect();
       });
@@ -118,8 +125,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   openDialog(char) {
     this.dialogRef = this.dialog.open(DialogComponent, {
       data: {
-        c: char
-      }
+        c: char,
+      },
     });
 
     this.dialogRef.afterClosed().subscribe((res: string) => {
@@ -157,7 +164,7 @@ export class HttpDatabase {
     return terms.pipe(
       debounceTime(400),
       distinctUntilChanged(),
-      switchMap(term =>
+      switchMap((term) =>
         this.getCharacters(term).pipe(
           catchError(() => {
             return of({ info: null, results: null });
@@ -175,9 +182,9 @@ export class HttpDatabase {
     const apiUrl = "https://rickandmortyapi.com/api/character";
     return this._httpClient.get<HttpRequest>(apiUrl, {
       params: new HttpParams()
-        .set('name', name)
-        .set('status', status)
-        .set('page', (page +1 ).toString())
+        .set("name", name)
+        .set("status", status)
+        .set("page", (page + 1).toString()),
     });
   }
 }

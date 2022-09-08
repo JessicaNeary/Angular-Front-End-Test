@@ -8,6 +8,7 @@ import { HttpClientModule } from "@angular/common/http";
 import { DialogComponent } from "./dialog/dialog.component";
 import { StatusColorPipe } from './status-color.pipe';
 import { MaterialModule } from "./material/material.module";
+import { CharacterInfoComponent } from './character-info/character-info.component';
 
 @NgModule({
   imports: [
@@ -19,7 +20,7 @@ import { MaterialModule } from "./material/material.module";
     ReactiveFormsModule,
     BrowserAnimationsModule
   ],
-  declarations: [AppComponent, DialogComponent, StatusColorPipe],
+  declarations: [AppComponent, DialogComponent, StatusColorPipe, CharacterInfoComponent],
   entryComponents: [DialogComponent],
   bootstrap: [AppComponent],
   providers: []

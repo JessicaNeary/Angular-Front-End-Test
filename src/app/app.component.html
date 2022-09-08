@@ -1,20 +1,32 @@
 <div class="page-container">
   <header class="header">
-    <img src="https://utopiamusic.com/assets/utopia_logo_white.svg">
+    <img src="https://utopiamusic.com/assets/utopia_logo_white.svg" />
     <p>Front-End Test</p>
   </header>
 
   <div class="flex-container">
     <mat-form-field>
       <mat-label>Search characters by name</mat-label>
-      <input matInput #search (keyup)="searchTerm$.next(search.value)" [formControl]="searchField">
-      <button mat-button *ngIf="search.value !== ''" matSuffix mat-icon-button aria-label="Clear" (click)="search.value='';searchTerm$.next(search.value); status=''">
+      <input
+        matInput
+        #search
+        (keyup)="searchTerm$.next(search.value)"
+        [formControl]="searchField"
+      />
+      <button
+        mat-button
+        *ngIf="search.value !== ''"
+        matSuffix
+        mat-icon-button
+        aria-label="Clear"
+        (click)="search.value = ''; searchTerm$.next(search.value); status = ''"
+      >
         <mat-icon>close</mat-icon>
       </button>
     </mat-form-field>
-      <small class="no-character-found" *ngIf="resultsEmpty$ | async">
-        No character found for this search
-      </small>
+    <small class="no-character-found" *ngIf="resultsEmpty$ | async">
+      No character found for this search
+    </small>
   </div>
 
   <div class="flex-container">
@@ -22,29 +34,21 @@
       <mat-label>Filter</mat-label>
       <mat-select (selectionChange)="applyFilter()" [(ngModel)]="status">
         <mat-option [value]="''">Todos</mat-option>
-        <mat-option *ngFor="let status of ['dead', 'alive', 'unknow']" [value]="status">
-          {{status}}</mat-option>
+        <mat-option
+          *ngFor="let status of ['dead', 'alive', 'unknow']"
+          [value]="status"
+        >
+          {{ status }}</mat-option
+        >
       </mat-select>
     </mat-form-field>
   </div>
-
-  <div class="flex-container">
-    <mat-card class="flex-item card mat-elevation-z2" *ngFor="let char of characters$ | async">
-      <mat-card-header>
-        <mat-card-title>{{char.name}}</mat-card-title>
-        <mat-card-subtitle>{{char.species}} | <span [style.color]="setStatusColor(char.status)">{{char.status}}</span>
-        </mat-card-subtitle>
-      </mat-card-header>
-      <img mat-card-image src="{{char.image}}" alt="{{char.name}}">
-      <mat-card-content>
-        <p><strong> Origin:</strong> {{char.origin.name}}</p>
-        <p><strong>Last known location:</strong> {{char.location.name}} </p>
-      </mat-card-content>
-      <mat-card-actions>
-        <a (click)="openDialog(char)" mat-stroked-button color="primary">Episodes</a>
-      </mat-card-actions>
-    </mat-card>
-  </div>
-  <mat-paginator [length]="resultsLength" [pageSize]="20" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+  <app-character-info [characters$]="characters$"></app-character-info>
+  <mat-paginator
+    [length]="resultsLength"
+    [pageSize]="20"
+    [pageSizeOptions]="[5, 10, 20]"
+    showFirstLastButtons
+  >
   </mat-paginator>
 </div>
