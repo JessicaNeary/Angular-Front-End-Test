@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import { Character } from "../app.component";
 import { DialogComponent } from "../dialog/dialog.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
-import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
+import { FormControl } from "@angular/forms";
 import { BehaviorSubject } from "rxjs";
 
 @Component({

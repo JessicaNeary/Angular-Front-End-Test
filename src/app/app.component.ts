@@ -111,6 +111,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         );
         this.characterDataSource.paginator = this.paginator;
         this.characters$ = this.characterDataSource.connect();
+        if (this.status) {
+          this.applyFilter();
+        }
       });
   }
 
