@@ -14,11 +14,9 @@ import {
   distinctUntilChanged,
   switchMap,
 } from "rxjs/operators";
-import { DialogComponent } from "./dialog/dialog.component";
 import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatTableDataSource } from "@angular/material/table";
-import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 
 export interface Origin {
   [key: string]: any;
@@ -71,13 +69,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   filterFormGroup: FormGroup;
   searchField = new FormControl("");
 
-  dialogRef: MatDialogRef<DialogComponent>;
-
-  constructor(
-    private httpClient: HttpClient,
-    public dialog: MatDialog,
-    private fb: FormBuilder
-  ) {}
+  constructor(private httpClient: HttpClient, private fb: FormBuilder) {}
   ngAfterViewInit(): void {
     this.paginator.page.subscribe(() => {
       this.characterDatabase
@@ -120,22 +112,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.characterDataSource.paginator = this.paginator;
         this.characters$ = this.characterDataSource.connect();
       });
-  }
-
-  openDialog(char) {
-    this.dialogRef = this.dialog.open(DialogComponent, {
-      data: {
-        c: char,
-      },
-    });
-
-    this.dialogRef.afterClosed().subscribe((res: string) => {
-      if (!res) {
-        return;
-      }
-      this.searchField.patchValue(res);
-      this.searchTerm$.next(res);
-    });
   }
 
   applyFilter() {
