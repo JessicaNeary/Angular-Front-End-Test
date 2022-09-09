@@ -32,7 +32,10 @@
   <div class="flex-container">
     <mat-form-field>
       <mat-label>Filter</mat-label>
-      <mat-select (selectionChange)="applyFilter()" [(ngModel)]="status">
+      <mat-select
+        (selectionChange)="status$.next($event.value)"
+        [(ngModel)]="status"
+      >
         <mat-option [value]="''">Todos</mat-option>
         <mat-option
           *ngFor="let status of ['dead', 'alive', 'unknow']"

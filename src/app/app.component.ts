@@ -63,7 +63,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   characterDatabase = new HttpDatabase(this.httpClient);
   searchTerm$ = new BehaviorSubject<string>("");
   resultsEmpty$ = new BehaviorSubject<boolean>(false);
-  status = "";
+  status$ = new BehaviorSubject<string>("");
   resultsLength = 0;
 
   filterFormGroup: FormGroup;
@@ -73,7 +73,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.paginator.page.subscribe(() => {
       this.characterDatabase
-        .getCharacters("", "", this.paginator.pageIndex)
+        .getCharacters(
+          this.searchTerm$.getValue(),
+          this.status$.getValue(),
+          this.paginator.pageIndex
+        )
         .subscribe((response: HttpRequest) => {
           this.characterDataSource = new MatTableDataSource(
             response.results as any[]
@@ -98,7 +102,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loadData() {
     this.characterDatabase
-      .search(this.searchTerm$)
+      .search(this.searchTerm$, this.status$)
       .subscribe((response: HttpRequest) => {
         if (!response.info || !response.results) {
           this.resultsEmpty$.next(true);
@@ -109,21 +113,26 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.characterDataSource = new MatTableDataSource(
           response.results as any[]
         );
-        this.characterDataSource.paginator = this.paginator;
         this.characters$ = this.characterDataSource.connect();
-        if (this.status) {
-          this.applyFilter();
-        }
       });
-  }
 
-  applyFilter() {
-    const filterValue = this.status;
-    this.characterDataSource.filter = filterValue.trim().toLowerCase();
-    this.characterDataSource.paginator = this.paginator;
-    if (this.characterDataSource.paginator) {
-      this.characterDataSource.paginator.firstPage();
-    }
+    this.status$.subscribe((data) => {
+      this.characterDatabase
+        .getCharacters(this.searchTerm$.getValue(), data)
+        .subscribe((response: HttpRequest) => {
+          if (!response.info || !response.results) {
+            this.resultsEmpty$.next(true);
+            return;
+          }
+          this.resultsEmpty$.next(false);
+          this.resultsLength = response.info?.count;
+          this.characterDataSource = new MatTableDataSource(
+            response.results as any[]
+          );
+          this.characterDataSource.paginator = this.paginator;
+          this.characters$ = this.characterDataSource.connect();
+        });
+    });
   }
 
   setStatusColor(status: string) {
@@ -139,12 +148,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 export class HttpDatabase {
   constructor(private _httpClient: HttpClient) {}
 
-  search(terms: Observable<string>) {
+  search(terms: Observable<string>, status: BehaviorSubject<string>) {
     return terms.pipe(
       debounceTime(400),
       distinctUntilChanged(),
       switchMap((term) =>
-        this.getCharacters(term).pipe(
+        this.getCharacters(term, status.getValue()).pipe(
           catchError(() => {
             return of({ info: null, results: null });
           })
