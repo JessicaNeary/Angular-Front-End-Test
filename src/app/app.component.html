@@ -46,6 +46,18 @@
       </mat-select>
     </mat-form-field>
   </div>
+  <div class="flex-container">
+    <mat-radio-group [(ngModel)]="orderBy" (change)="orderResults()">
+      <mat-label>Order By:</mat-label>
+      <mat-radio-button
+        *ngFor="let category of ['Alphabetically', 'First Appeared']"
+        [value]="category"
+        class="order-buttons"
+      >
+        {{ category }}
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
   <app-character-info [characters$]="characters$"></app-character-info>
   <mat-paginator
     [length]="resultsLength"

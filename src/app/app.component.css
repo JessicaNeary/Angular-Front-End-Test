@@ -14,3 +14,8 @@ header h1 {
 .no-character-found {
   color: red;
 }
+
+.order-buttons {
+  margin-left: 20px;
+  margin-bottom: 20px;
+}

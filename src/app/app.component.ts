@@ -12,6 +12,7 @@ import {
   catchError,
   debounceTime,
   distinctUntilChanged,
+  first,
   switchMap,
 } from "rxjs/operators";
 import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
@@ -58,6 +59,7 @@ export interface HttpRequest {
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  allCharacters: Character[] | undefined;
   characters$: Observable<any>;
   characterDataSource: MatTableDataSource<Character[]>;
   characterDatabase = new HttpDatabase(this.httpClient);
@@ -65,6 +67,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   resultsEmpty$ = new BehaviorSubject<boolean>(false);
   status$ = new BehaviorSubject<string>("");
   resultsLength = 0;
+  orderBy: string;
 
   filterFormGroup: FormGroup;
   searchField = new FormControl("");
@@ -82,9 +85,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           this.characterDataSource = new MatTableDataSource(
             response.results as any[]
           );
+          this.allCharacters = response.results;
           this.resultsLength = response.info?.count;
           // this.characterDataSource.paginator = this.paginator;
-          this.characters$ = this.characterDataSource.connect();
+          this.orderResults();
         });
     });
   }
@@ -113,7 +117,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.characterDataSource = new MatTableDataSource(
           response.results as any[]
         );
-        this.characters$ = this.characterDataSource.connect();
+        this.allCharacters = response.results;
+        this.orderResults();
       });
 
     this.status$.subscribe((data) => {
@@ -126,13 +131,37 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           this.resultsEmpty$.next(false);
           this.resultsLength = response.info?.count;
+          this.allCharacters = response.results;
           this.characterDataSource = new MatTableDataSource(
             response.results as any[]
           );
           this.characterDataSource.paginator = this.paginator;
-          this.characters$ = this.characterDataSource.connect();
+          this.orderResults();
         });
     });
+  }
+
+  orderResults() {
+    switch (this.orderBy) {
+      case "Alphabetically": {
+        this.characterDataSource.data.sort((first, second) => {
+          return first.name.localeCompare(second.name);
+        });
+        break;
+      }
+      case "First Appeared": {
+        this.characterDataSource.data.sort((first, second) => {
+          const firstEp = first.episode[0].match(/\d+/)[0];
+          const secondEp = second.episode[0].match(/\d+/)[0];
+          return parseInt(firstEp, 10) - parseInt(secondEp, 10);
+        });
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+    this.characters$ = this.characterDataSource.connect();
   }
 
   setStatusColor(status: string) {
