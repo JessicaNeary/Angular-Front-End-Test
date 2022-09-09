@@ -3,7 +3,7 @@ import { Character } from "../app.component";
 import { DialogComponent } from "../dialog/dialog.component";
 import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { FormControl } from "@angular/forms";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 
 @Component({
   selector: "app-character-info",
@@ -11,7 +11,7 @@ import { BehaviorSubject } from "rxjs";
   styleUrls: ["./character-info.component.css"],
 })
 export class CharacterInfoComponent implements OnInit {
-  @Input() characters$: Character[];
+  @Input() characters$: Observable<any>;
   dialogRef: MatDialogRef<DialogComponent>;
   searchField = new FormControl("");
   searchTerm$ = new BehaviorSubject<string>("");
