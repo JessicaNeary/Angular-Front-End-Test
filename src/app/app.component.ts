@@ -131,8 +131,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           this.characterDataSource = new MatTableDataSource(
             response.results as any[]
           );
-          this.characterDataSource.paginator = this.paginator;
           this.orderResults();
+          // this.characterDataSource.paginator = this.paginator;
         });
     });
   }
