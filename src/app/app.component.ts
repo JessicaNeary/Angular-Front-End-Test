@@ -59,9 +59,8 @@ export interface HttpRequest {
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  allCharacters: Character[] | undefined;
   characters$: Observable<any>;
-  characterDataSource: MatTableDataSource<Character[]>;
+  characterDataSource: MatTableDataSource<Character>;
   characterDatabase = new HttpDatabase(this.httpClient);
   searchTerm$ = new BehaviorSubject<string>("");
   resultsEmpty$ = new BehaviorSubject<boolean>(false);
@@ -85,7 +84,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           this.characterDataSource = new MatTableDataSource(
             response.results as any[]
           );
-          this.allCharacters = response.results;
           this.resultsLength = response.info?.count;
           // this.characterDataSource.paginator = this.paginator;
           this.orderResults();
@@ -117,7 +115,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.characterDataSource = new MatTableDataSource(
           response.results as any[]
         );
-        this.allCharacters = response.results;
         this.orderResults();
       });
 
@@ -131,7 +128,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           this.resultsEmpty$.next(false);
           this.resultsLength = response.info?.count;
-          this.allCharacters = response.results;
           this.characterDataSource = new MatTableDataSource(
             response.results as any[]
           );
